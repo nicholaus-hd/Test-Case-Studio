@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TestCase Studio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <rect x="2" y="2" width="24" height="24" rx="6" fill="#3b82f6"/>
+          <path d="M8 14l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="sidebar-title">TestCase Studio</span>
+      </div>
+      <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close sidebar">&#x2715;</button>
+    </div>
+    <ul class="nav-list" role="navigation" aria-label="Main navigation">
+      <li><a href="#" class="nav-link active" data-section="dashboard" role="menuitem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a></li>
+      <li><a href="#" class="nav-link" data-section="testcases" role="menuitem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Test Cases
+      </a></li>
+      <li><a href="#" class="nav-link" data-section="generator" role="menuitem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Generator
+      </a></li>
+      <li><a href="#" class="nav-link" data-section="projects" role="menuitem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        Projects
+      </a></li>
+      <li><a href="#" class="nav-link" data-section="execution" role="menuitem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        Execution
+      </a></li>
+      <li><a href="#" class="nav-link" data-section="importexport" role="menuitem">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Import / Export
+      </a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <button class="btn btn-ghost btn-sm" id="loadSampleBtn">Load Sample Data</button>
+      <button class="btn btn-ghost btn-sm btn-danger-ghost" id="clearDataBtn">Clear All Data</button>
+    </div>
+  </nav>
+
+  <!-- Top bar (mobile) -->
+  <header class="topbar">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="topbar-title">TestCase Studio</span>
+  </header>
+
+  <!-- Overlay for mobile sidebar -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Main Content -->
+  <main class="main-content" id="mainContent">
+
+    <!-- ======================== DASHBOARD ======================== -->
+    <section class="section" id="section-dashboard">
+      <div class="section-header">
+        <h1 class="section-title">Dashboard</h1>
+      </div>
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card" data-stat="total"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total Test Cases</div></div>
+        <div class="stat-card" data-stat="passed"><div class="stat-value" id="statPassed">0</div><div class="stat-label">Passed</div></div>
+        <div class="stat-card" data-stat="failed"><div class="stat-value" id="statFailed">0</div><div class="stat-label">Failed</div></div>
+        <div class="stat-card" data-stat="notrun"><div class="stat-value" id="statNotRun">0</div><div class="stat-label">Not Run</div></div>
+        <div class="stat-card" data-stat="blocked"><div class="stat-value" id="statBlocked">0</div><div class="stat-label">Blocked</div></div>
+        <div class="stat-card" data-stat="projects"><div class="stat-value" id="statProjects">0</div><div class="stat-label">Projects</div></div>
+      </div>
+      <div class="dashboard-row">
+        <div class="card dashboard-chart-card">
+          <div class="card-header"><h2 class="card-title">Status Distribution</h2></div>
+          <div class="chart-container" id="statusChart"></div>
+          <div class="chart-legend" id="chartLegend"></div>
+        </div>
+        <div class="card dashboard-recent-card">
+          <div class="card-header"><h2 class="card-title">Recent Test Cases</h2></div>
+          <div id="recentTestCases"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== TEST CASES ======================== -->
+    <section class="section hidden" id="section-testcases">
+      <div class="section-header">
+        <h1 class="section-title">Test Cases</h1>
+        <button class="btn btn-primary" id="newTestCaseBtn">+ New Test Case</button>
+      </div>
+      <div class="filters-bar" id="tcFiltersBar">
+        <input type="search" class="input search-input" id="tcSearch" placeholder="Search by ID or title…" aria-label="Search test cases" />
+        <select class="input select-input" id="tcFilterProject" aria-label="Filter by project"><option value="">All Projects</option></select>
+        <select class="input select-input" id="tcFilterPriority" aria-label="Filter by priority">
+          <option value="">All Priorities</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+          <option value="Critical">Critical</option>
+        </select>
+        <select class="input select-input" id="tcFilterType" aria-label="Filter by type">
+          <option value="">All Types</option>
+          <option value="Functional">Functional</option>
+          <option value="UI">UI</option>
+          <option value="Integration">Integration</option>
+          <option value="Regression">Regression</option>
+          <option value="Performance">Performance</option>
+          <option value="Security">Security</option>
+        </select>
+        <select class="input select-input" id="tcFilterStatus" aria-label="Filter by status">
+          <option value="">All Statuses</option>
+          <option value="Not Run">Not Run</option>
+          <option value="Passed">Passed</option>
+          <option value="Failed">Failed</option>
+          <option value="Blocked">Blocked</option>
+        </select>
+        <select class="input select-input" id="tcSort" aria-label="Sort by">
+          <option value="createdAt-desc">Newest First</option>
+          <option value="createdAt-asc">Oldest First</option>
+          <option value="title-asc">Title A–Z</option>
+          <option value="title-desc">Title Z–A</option>
+          <option value="priority-desc">Priority (High–Low)</option>
+          <option value="status-asc">Status</option>
+        </select>
+      </div>
+      <div class="table-wrapper" id="tcTableWrapper">
+        <table class="data-table" id="tcTable" aria-label="Test cases table">
+          <thead>
+            <tr>
+              <th>ID</th><th>Title</th><th>Project</th><th>Priority</th><th>Type</th><th>Status</th><th>Updated</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tcTableBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state hidden" id="tcEmpty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <p>No test cases found.</p>
+        <button class="btn btn-primary" id="tcEmptyNewBtn">Create your first test case</button>
+      </div>
+    </section>
+
+    <!-- ======================== GENERATOR ======================== -->
+    <section class="section hidden" id="section-generator">
+      <div class="section-header"><h1 class="section-title">Test Case Generator</h1></div>
+      <div class="generator-layout">
+        <div class="card generator-form-card">
+          <div class="card-header"><h2 class="card-title">Input</h2></div>
+          <form id="generatorForm" novalidate>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label" for="genFeature">Feature / Module Name <span class="required">*</span></label><input type="text" class="input" id="genFeature" placeholder="e.g. User Login" required /></div>
+              <div class="form-group"><label class="form-label" for="genProject">Assign to Project</label><select class="input" id="genProject"><option value="">— None —</option></select></div>
+              <div class="form-group form-full"><label class="form-label" for="genDescription">Feature Description <span class="required">*</span></label><textarea class="input textarea" id="genDescription" rows="3" placeholder="Describe the feature or module being tested…" required></textarea></div>
+              <div class="form-group form-full"><label class="form-label" for="genObjective">Testing Objective <span class="required">*</span></label><textarea class="input textarea" id="genObjective" rows="2" placeholder="What should this test verify?" required></textarea></div>
+              <div class="form-group form-full"><label class="form-label" for="genPreconditions">Preconditions</label><textarea class="input textarea" id="genPreconditions" rows="2" placeholder="Conditions that must be true before executing the test…"></textarea></div>
+              <div class="form-group form-full"><label class="form-label" for="genScenario">User Action / Test Scenario <span class="required">*</span></label><textarea class="input textarea" id="genScenario" rows="2" placeholder="What actions does the user perform?" required></textarea></div>
+              <div class="form-group form-full"><label class="form-label" for="genExpected">Expected Behavior <span class="required">*</span></label><textarea class="input textarea" id="genExpected" rows="2" placeholder="What should happen as a result?" required></textarea></div>
+              <div class="form-group"><label class="form-label" for="genType">Test Type <span class="required">*</span></label><select class="input" id="genType" required><option value="">Select type</option><option>Functional</option><option>UI</option><option>Integration</option><option>Regression</option><option>Performance</option><option>Security</option></select></div>
+              <div class="form-group"><label class="form-label" for="genPriority">Priority <span class="required">*</span></label><select class="input" id="genPriority" required><option value="">Select priority</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Generate Test Case</button>
+              <button type="button" class="btn btn-ghost" id="genClearBtn">Clear</button>
+            </div>
+          </form>
+        </div>
+        <div class="card generator-preview-card hidden" id="generatorPreview">
+          <div class="card-header">
+            <h2 class="card-title">Generated Preview</h2>
+            <div class="card-actions">
+              <button class="btn btn-primary btn-sm" id="genSaveBtn">Save Test Case</button>
+              <button class="btn btn-ghost btn-sm" id="genDiscardBtn">Discard</button>
+            </div>
+          </div>
+          <div id="generatorPreviewContent"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== PROJECTS ======================== -->
+    <section class="section hidden" id="section-projects">
+      <div class="section-header">
+        <h1 class="section-title">Projects</h1>
+        <button class="btn btn-primary" id="newProjectBtn">+ New Project</button>
+      </div>
+      <div class="projects-grid" id="projectsGrid"></div>
+      <div class="empty-state hidden" id="projectsEmpty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        <p>No projects yet.</p>
+        <button class="btn btn-primary" id="projectsEmptyNewBtn">Create your first project</button>
+      </div>
+    </section>
+
+    <!-- ======================== EXECUTION ======================== -->
+    <section class="section hidden" id="section-execution">
+      <div class="section-header"><h1 class="section-title">Test Execution</h1></div>
+      <div class="filters-bar">
+        <input type="search" class="input search-input" id="execSearch" placeholder="Search by ID or title…" aria-label="Search test cases for execution" />
+        <select class="input select-input" id="execFilterProject" aria-label="Filter by project"><option value="">All Projects</option></select>
+        <select class="input select-input" id="execFilterStatus" aria-label="Filter by status">
+          <option value="">All Statuses</option>
+          <option value="Not Run">Not Run</option>
+          <option value="Passed">Passed</option>
+          <option value="Failed">Failed</option>
+          <option value="Blocked">Blocked</option>
+        </select>
+      </div>
+      <div class="table-wrapper">
+        <table class="data-table" id="execTable" aria-label="Test execution table">
+          <thead><tr><th>ID</th><th>Title</th><th>Project</th><th>Priority</th><th>Status</th><th>Updated</th><th>Actions</th></tr></thead>
+          <tbody id="execTableBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state hidden" id="execEmpty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        <p>No test cases to execute.</p>
+      </div>
+    </section>
+
+    <!-- ======================== IMPORT / EXPORT ======================== -->
+    <section class="section hidden" id="section-importexport">
+      <div class="section-header"><h1 class="section-title">Import / Export</h1></div>
+      <div class="ie-layout">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Export Test Cases</h2></div>
+          <p class="card-desc">Download your test cases as a CSV file. You can choose to export all test cases or only the currently filtered results.</p>
+          <div class="form-group">
+            <label class="form-label" for="exportFilter">Export Scope</label>
+            <select class="input" id="exportFilter">
+              <option value="all">All Test Cases</option>
+              <option value="filtered">Current Filter</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" id="exportCsvBtn">Export to CSV</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Import Test Cases</h2></div>
+          <p class="card-desc">Upload a CSV file to import test cases. Required columns: <code>title, projectId, scenario, preconditions, expectedResult, priority, type, status</code>.</p>
+          <div class="form-group">
+            <label class="form-label" for="importFile">CSV File</label>
+            <input type="file" class="input file-input" id="importFile" accept=".csv" aria-label="Select CSV file to import" />
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" id="importPreviewBtn">Preview Import</button>
+          </div>
+          <div id="importPreviewArea" class="hidden"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================== MODALS ======================== -->
+
+  <!-- Test Case Form Modal -->
+  <div class="modal-backdrop hidden" id="tcModal" role="dialog" aria-modal="true" aria-labelledby="tcModalTitle">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h2 class="modal-title" id="tcModalTitle">New Test Case</h2>
+        <button class="modal-close" id="tcModalClose" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <form id="tcForm" novalidate>
+          <input type="hidden" id="tcFormId" />
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label" for="tcTitle">Title <span class="required">*</span></label><input type="text" class="input" id="tcTitle" required /></div>
+            <div class="form-group"><label class="form-label" for="tcProject">Project <span class="required">*</span></label><select class="input" id="tcProject" required><option value="">Select project</option></select></div>
+            <div class="form-group form-full"><label class="form-label" for="tcScenario">Test Scenario / Objective <span class="required">*</span></label><textarea class="input textarea" id="tcScenario" rows="2" required></textarea></div>
+            <div class="form-group form-full"><label class="form-label" for="tcPreconditions">Preconditions</label><textarea class="input textarea" id="tcPreconditions" rows="2"></textarea></div>
+            <div class="form-group"><label class="form-label" for="tcPriority">Priority <span class="required">*</span></label><select class="input" id="tcPriority" required><option value="">Select</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div>
+            <div class="form-group"><label class="form-label" for="tcType">Test Type <span class="required">*</span></label><select class="input" id="tcType" required><option value="">Select</option><option>Functional</option><option>UI</option><option>Integration</option><option>Regression</option><option>Performance</option><option>Security</option></select></div>
+            <div class="form-group"><label class="form-label" for="tcStatus">Status</label><select class="input" id="tcStatus"><option>Not Run</option><option>Passed</option><option>Failed</option><option>Blocked</option></select></div>
+            <div class="form-group form-full"><label class="form-label">Test Steps <span class="required">*</span></label>
+              <div id="stepsContainer"></div>
+              <button type="button" class="btn btn-ghost btn-sm" id="addStepBtn">+ Add Step</button>
+            </div>
+            <div class="form-group form-full"><label class="form-label" for="tcExpected">Expected Result <span class="required">*</span></label><textarea class="input textarea" id="tcExpected" rows="2" required></textarea></div>
+            <div class="form-group form-full"><label class="form-label" for="tcActual">Actual Result</label><textarea class="input textarea" id="tcActual" rows="2"></textarea></div>
+            <div class="form-group form-full"><label class="form-label" for="tcNotes">Notes</label><textarea class="input textarea" id="tcNotes" rows="2"></textarea></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="tcFormCancel">Cancel</button>
+        <button class="btn btn-primary" id="tcFormSave">Save Test Case</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test Case Detail Modal -->
+  <div class="modal-backdrop hidden" id="tcDetailModal" role="dialog" aria-modal="true" aria-labelledby="tcDetailTitle">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h2 class="modal-title" id="tcDetailTitle">Test Case Detail</h2>
+        <button class="modal-close" id="tcDetailClose" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="modal-body" id="tcDetailBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="tcDetailClose2">Close</button>
+        <button class="btn btn-primary" id="tcDetailEdit">Edit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Form Modal -->
+  <div class="modal-backdrop hidden" id="projectModal" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="projectModalTitle">New Project</h2>
+        <button class="modal-close" id="projectModalClose" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <form id="projectForm" novalidate>
+          <input type="hidden" id="projectFormId" />
+          <div class="form-group"><label class="form-label" for="projectName">Project Name <span class="required">*</span></label><input type="text" class="input" id="projectName" required /></div>
+          <div class="form-group"><label class="form-label" for="projectDesc">Description</label><textarea class="input textarea" id="projectDesc" rows="3"></textarea></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="projectFormCancel">Cancel</button>
+        <button class="btn btn-primary" id="projectFormSave">Save Project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Execution Modal -->
+  <div class="modal-backdrop hidden" id="execModal" role="dialog" aria-modal="true" aria-labelledby="execModalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="execModalTitle">Record Execution</h2>
+        <button class="modal-close" id="execModalClose" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <form id="execForm" novalidate>
+          <input type="hidden" id="execFormTcId" />
+          <div class="form-group"><label class="form-label" for="execStatus">Execution Status <span class="required">*</span></label><select class="input" id="execStatus" required><option>Not Run</option><option>Passed</option><option>Failed</option><option>Blocked</option></select></div>
+          <div class="form-group"><label class="form-label" for="execActual">Actual Result</label><textarea class="input textarea" id="execActual" rows="3"></textarea></div>
+          <div class="form-group"><label class="form-label" for="execNotes">Notes / Observations</label><textarea class="input textarea" id="execNotes" rows="3"></textarea></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="execFormCancel">Cancel</button>
+        <button class="btn btn-primary" id="execFormSave">Save Result</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Dialog -->
+  <div class="modal-backdrop hidden" id="confirmModal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h2 class="modal-title" id="confirmTitle">Confirm</h2>
+      </div>
+      <div class="modal-body"><p id="confirmMessage"></p></div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="confirmCancel">Cancel</button>
+        <button class="btn btn-danger" id="confirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Preview Modal -->
+  <div class="modal-backdrop hidden" id="importModal" role="dialog" aria-modal="true" aria-labelledby="importModalTitle">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h2 class="modal-title" id="importModalTitle">Import Preview</h2>
+        <button class="modal-close" id="importModalClose" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="modal-body" id="importModalBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="importModalCancel">Cancel</button>
+        <button class="btn btn-primary" id="importModalConfirm">Import</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
